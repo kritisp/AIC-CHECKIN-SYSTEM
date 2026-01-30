@@ -1,0 +1,24 @@
+# Virtual environment
+venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# QR codes (generated files)
+qr_codes/
+*.png
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE configs (optional but safe)
+.vscode/
+.idea/
+
+# Logs
+*.log
