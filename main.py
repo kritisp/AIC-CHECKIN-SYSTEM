@@ -7,9 +7,20 @@ from auth_utils import verify_password
 from jwt_utils import create_access_token
 from auth_dependency import get_current_user, require_role
 from fastapi import Depends
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(title="AIC Check-in System")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://aic-checkin-system.vercel.app"  # future frontend
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --------------------------------------------------
 # BASIC HEALTH CHECK
