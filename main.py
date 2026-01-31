@@ -10,7 +10,7 @@ from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from email_service import send_qr_email
 import threading
-
+import time
 
 
 app = FastAPI(title="AIC Check-in System")
@@ -95,7 +95,7 @@ def register_participant(payload: dict):
     args=(email, name, uid, qr_public_url),
     daemon=True
 ).start()
-
+    time.sleep(2)  # Give thread time to start
 
 
     return {
