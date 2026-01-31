@@ -12,6 +12,7 @@ from email_service import send_qr_email
 import threading
 
 
+
 app = FastAPI(title="AIC Check-in System")
 app.add_middleware(
     CORSMiddleware,
@@ -94,6 +95,8 @@ def register_participant(payload: dict):
     args=(email, name, uid, qr_public_url),
     daemon=True
 ).start()
+
+
 
     return {
         "success": True,
