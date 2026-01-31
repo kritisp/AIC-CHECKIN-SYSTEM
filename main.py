@@ -8,6 +8,8 @@ from jwt_utils import create_access_token
 from auth_dependency import get_current_user, require_role
 from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
+from email_service import send_qr_email
+
 
 
 app = FastAPI(title="AIC Check-in System")
@@ -82,12 +84,25 @@ def register_participant(payload: dict):
     }
 
     supabase.table("participants").insert(data).execute()
+    
+    # Generate public QR URL (SAFE & FAST)
+    qr_public_url = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={uid}"
+
+# Send email
+    send_qr_email(
+    to_email=email,
+    name=name,
+    uid=uid,
+    qr_url=qr_public_url
+)
+
+
 
     return {
         "success": True,
         "uid": uid,
         "qr_path": qr_path,
-        "message": "Registration successful"
+        "message": "Registration successful.QR sent via email."
     }
 
 # --------------------------------------------------
