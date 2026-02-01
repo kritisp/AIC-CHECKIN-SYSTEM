@@ -1,23 +1,23 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-from supabase_client import supabase
+from sqlalchemy.orm import Session
+
+from database import get_db
+from models import Participant, User
 from utils import generate_uid
-from qr_service import generate_qr
 from auth_utils import verify_password
 from jwt_utils import create_access_token
 from auth_dependency import get_current_user, require_role
-from fastapi import Depends
-from fastapi.middleware.cors import CORSMiddleware
-
-
 
 
 app = FastAPI(title="AIC Check-in System")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://aic-checkin-system.vercel.app"  # future frontend
+        "https://aic-checkin-system.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -30,154 +30,129 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"status": "Backend running"}
+    return {"status": "Backend running (PostgreSQL)"}
+
 
 @app.get("/test-db")
-def test_db():
-    res = supabase.table("participants").select("id").limit(1).execute()
-    return {"ok": True, "data": res.data}
+def test_db(db: Session = Depends(get_db)):
+    count = db.query(Participant).count()
+    return {"ok": True, "participants": count}
+
 
 # --------------------------------------------------
 # REGISTRATION (USED BY GOOGLE FORM)
 # --------------------------------------------------
 
 @app.post("/register")
-def register_participant(payload: dict):
-    name = payload.get("name")
+def register_participant(payload: dict, db: Session = Depends(get_db)):
     email = payload.get("email")
-    phone = payload.get("phone")
-    college = payload.get("college")
-    role = payload.get("role")
 
-    if not name or not email or not role:
-        raise HTTPException(status_code=400, detail="Missing required fields")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
 
-    # 1. Prevent duplicate registration
-    existing = (
-        supabase
-        .table("participants")
-        .select("id")
-        .eq("email", email)
-        .execute()
-    )
+    existing = db.query(Participant).filter(
+        Participant.email == email
+    ).first()
 
-    if existing.data:
+    if existing:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    # 2. Generate unique ID
     uid = generate_uid()
 
-    # 3. Generate QR code
-    qr_path = generate_qr(uid)
+    participant = Participant(
+        uid=uid,
+        name=payload.get("name"),
+        email=email,
+        phone=payload.get("phone"),
+        college=payload.get("college"),
+        role=payload.get("role"),
+        checked_in=False,
+        created_at=datetime.utcnow()
+    )
 
-    # 4. Insert participant into DB
-    data = {
-        "uid": uid,
-        "name": name,
-        "email": email,
-        "phone": phone,
-        "college": college,
-        "role": role,
-        "checked_in": False,
-        "qr_path": qr_path,
-        "created_at": datetime.utcnow().isoformat()
-    }
-
-    supabase.table("participants").insert(data).execute()
-    
-    
-
-
+    db.add(participant)
+    db.commit()
+    db.refresh(participant)
 
     return {
         "success": True,
         "uid": uid,
-        "qr_path": qr_path,
-        "message": "Registration successful.QR will be sent via email."
+        "message": "Registration successful. QR will be sent via email."
     }
 
+
 # --------------------------------------------------
-# SCAN QR (READ-ONLY, NO CHECK-IN)
+# SCAN QR (READ-ONLY)
 # --------------------------------------------------
+
 @app.post("/scan")
 def scan_participant(
     payload: dict,
-    user=Depends(get_current_user)  # volunteer OR admin
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
 ):
     uid = payload.get("uid")
 
     if not uid:
         raise HTTPException(status_code=400, detail="UID is required")
 
-    res = (
-        supabase
-        .table("participants")
-        .select(
-            "uid, name, email, phone, college, role, checked_in, checkin_time"
-        )
-        .eq("uid", uid)
-        .execute()
-    )
+    participant = db.query(Participant).filter(
+        Participant.uid == uid
+    ).first()
 
-    if not res.data:
-        return {
-            "valid": False,
-            "message": "Invalid QR code"
-        }
-
-    participant = res.data[0]
+    if not participant:
+        return {"valid": False, "message": "Invalid QR code"}
 
     return {
         "valid": True,
-        "already_checked_in": participant["checked_in"],
+        "already_checked_in": participant.checked_in,
         "participant": {
-            "uid": participant["uid"],
-            "name": participant["name"],
-            "email": participant["email"],
-            "phone": participant["phone"],
-            "college": participant["college"],
-            "role": participant["role"]
+            "uid": participant.uid,
+            "name": participant.name,
+            "email": participant.email,
+            "phone": participant.phone,
+            "college": participant.college,
+            "role": participant.role
         },
-        "checkin_time": participant["checkin_time"]
+        "checkin_time": (
+            participant.checkin_time.isoformat()
+            if participant.checkin_time else None
+        )
     }
 
 
 # --------------------------------------------------
-# CONFIRM CHECK-IN (AFTER VOLUNTEER APPROVAL)
+# CONFIRM CHECK-IN
 # --------------------------------------------------
+
 @app.post("/checkin")
 def confirm_checkin(
     payload: dict,
-    user=Depends(get_current_user)  # volunteer OR admin
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
 ):
     uid = payload.get("uid")
 
     if not uid:
         raise HTTPException(status_code=400, detail="UID is required")
 
-    res = (
-        supabase
-        .table("participants")
-        .select("checked_in")
-        .eq("uid", uid)
-        .execute()
-    )
+    participant = db.query(Participant).filter(
+        Participant.uid == uid
+    ).first()
 
-    if not res.data:
+    if not participant:
         raise HTTPException(status_code=404, detail="Invalid QR code")
 
-    participant = res.data[0]
-
-    if participant["checked_in"]:
+    if participant.checked_in:
         return {
             "status": "already_checked_in",
             "message": "Participant already checked in"
         }
 
-    supabase.table("participants").update({
-        "checked_in": True,
-        "checkin_time": datetime.utcnow().isoformat()
-    }).eq("uid", uid).execute()
+    participant.checked_in = True
+    participant.checkin_time = datetime.utcnow()
+
+    db.commit()
 
     return {
         "status": "checked_in",
@@ -185,92 +160,71 @@ def confirm_checkin(
     }
 
 
+# --------------------------------------------------
+# LOGIN
+# --------------------------------------------------
+
 @app.post("/login")
-def login(payload: dict):
+def login(payload: dict, db: Session = Depends(get_db)):
     username = payload.get("username")
     password = payload.get("password")
 
     if not username or not password:
         raise HTTPException(status_code=400, detail="Missing credentials")
 
-    # Fetch user
-    res = (
-        supabase
-        .table("users")
-        .select("username, password_hash, role, active")
-        .eq("username", username)
-        .limit(1)
-        .execute()
+    user = (
+        db.query(User)
+        .filter(User.username == username)
+        .first()
     )
 
-    if not res.data:
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    user = res.data[0]
-
-    if not user["active"]:
+    if not user.active:
         raise HTTPException(status_code=403, detail="User is disabled")
 
-    if not verify_password(password, user["password_hash"]):
+    if not verify_password(password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    # Create JWT
     token = create_access_token({
-        "username": user["username"],
-        "role": user["role"]
+        "username": user.username,
+        "role": user.role
     })
 
     return {
         "access_token": token,
-        "role": user["role"]
+        "role": user.role
     }
 
+
+# --------------------------------------------------
+# ADMIN STATS
+# --------------------------------------------------
+
 @app.get("/stats")
-def get_stats(user=Depends(require_role("admin"))):
-    # Total registrations
-    total_res = (
-        supabase
-        .table("participants")
-        .select("id", count="exact")
-        .execute()
-    )
-    total = total_res.count or 0
+def get_stats(
+    db: Session = Depends(get_db),
+    user=Depends(require_role("admin"))
+):
+    total = db.query(Participant).count()
+    checked_in = db.query(Participant).filter(
+        Participant.checked_in == True
+    ).count()
 
-    # Checked-in count
-    checked_res = (
-        supabase
-        .table("participants")
-        .select("id", count="exact")
-        .eq("checked_in", True)
-        .execute()
-    )
-    checked_in = checked_res.count or 0
-
-    # Pending
     pending = total - checked_in
 
-    # Role-wise breakdown
-    role_res = (
-        supabase
-        .table("participants")
-        .select("role")
-        .execute()
-    )
-
     role_counts = {}
-    for r in role_res.data:
-        role = r.get("role", "unknown")
+    for r in db.query(Participant.role).all():
+        role = r[0] or "unknown"
         role_counts[role] = role_counts.get(role, 0) + 1
 
-    # Recent check-ins (last 10)
-    recent_res = (
-        supabase
-        .table("participants")
-        .select("name, email, role, checkin_time")
-        .eq("checked_in", True)
-        .order("checkin_time", desc=True)
+    recent = (
+        db.query(Participant)
+        .filter(Participant.checked_in == True)
+        .order_by(Participant.checkin_time.desc())
         .limit(10)
-        .execute()
+        .all()
     )
 
     return {
@@ -278,6 +232,13 @@ def get_stats(user=Depends(require_role("admin"))):
         "checked_in": checked_in,
         "pending": pending,
         "role_breakdown": role_counts,
-        "recent_checkins": recent_res.data
+        "recent_checkins": [
+            {
+                "name": p.name,
+                "email": p.email,
+                "role": p.role,
+                "checkin_time": p.checkin_time.isoformat()
+            }
+            for p in recent
+        ]
     }
-
