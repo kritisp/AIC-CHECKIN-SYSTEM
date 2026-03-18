@@ -46,7 +46,7 @@ Dear {name},
 
 We are thrilled to officially confirm your registration for the Inaugural Ceremony of the AIC–SOA Foundation!
 
-As a student, you are the future of innovation. This milestone event marks the beginning of a vibrant entrepreneurship ecosystem, and we are excited to have you join us to connect with startup founders, industry experts, and ecosystem enablers.
+As a participant, you are the future of innovation. This milestone event marks the beginning of a vibrant entrepreneurship ecosystem, and we are excited to have you join us to connect with startup founders, industry experts, and ecosystem enablers.
 
 Event Details:
 Date: 19th March 2026
@@ -80,7 +80,7 @@ Team AIC–SOA Foundation
 
                 <p style="font-size: 15px;">We are thrilled to officially confirm your registration for the <strong>Inaugural Ceremony of the AIC–SOA Foundation!</strong></p>
 
-                <p style="font-size: 15px;">As a student, you are a vital part of the future of innovation. This milestone event marks the beginning of a strengthened entrepreneurship ecosystem, and we are immensely excited to welcome you to connect with startup founders, industry experts, and ecosystem leaders.</p>
+                <p style="font-size: 15px;">As a participant, you are a vital part of the future of innovation. This milestone event marks the beginning of a strengthened entrepreneurship ecosystem, and we are immensely excited to welcome you to connect with startup founders, industry experts, and ecosystem leaders.</p>
 
                 <div style="background-color: #f0f4f8; border-left: 4px solid #2b5797; padding: 15px; margin: 25px 0;">
                     <p style="margin: 0 0 5px 0; font-size: 14px; color: #555;"><strong>Date:</strong> 19th March 2026</p>
