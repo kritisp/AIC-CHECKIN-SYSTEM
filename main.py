@@ -70,6 +70,7 @@ def register_participant(payload: dict, background_tasks: BackgroundTasks):
         "phone": payload.get("phone") or "",
         "college": payload.get("college") or "",
         "role": (payload.get("role") or "participant").lower(),
+        "registration_number": payload.get("registration_number") or "",
         "checked_in": False,
         "created_at": datetime.utcnow().isoformat(),
     }
