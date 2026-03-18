@@ -44,50 +44,65 @@ def send_qr_email(to_email: str, name: str, uid: str):
     msg.set_content(f"""
 Dear {name},
 
-The much-awaited moment is here! We are delighted to invite you to the Inaugural Ceremony of AIC–SOA Foundation, scheduled at 3:30PM on 19th March 2026.
+We are thrilled to officially confirm your registration for the Inaugural Ceremony of the AIC–SOA Foundation!
 
-This milestone marks the beginning of a strengthened innovation and entrepreneurship ecosystem, and your presence as a valued stakeholder will make the occasion even more meaningful. We also encourage Ecosystem Enablers & Startup Founders to join with their innovations and products during the event and engage with fellow founders, industry experts, and ecosystem partners.
+As a student, you are the future of innovation. This milestone event marks the beginning of a vibrant entrepreneurship ecosystem, and we are excited to have you join us to connect with startup founders, industry experts, and ecosystem enablers.
 
-In case you are unable to attend personally, you may kindly nominate a representative to participate on your behalf.
+Event Details:
+Date: 19th March 2026
+Time: 3:30 PM
 
 Your Entry ID: {uid}
-Please find your QR code attached to this email. Show this QR code at the venue entrance.
+Please find your QR code attached to this email. You must present this QR code at the registration desk for seamless entry into the event.
 
 Event Agenda:
 https://drive.google.com/file/d/16QuhxLkcRvCr8qTUIxitC2C9EQex68GI/view?usp=sharing
 
-Your presence and support will greatly contribute to making this inauguration a grand success. We look forward to welcoming you!
+We look forward to welcoming you and building the future of innovation together!
 
 Warm regards,
 Team AIC–SOA Foundation
 """)
 
-    # HTML Body exactly matching new Inauguration script
+    # HTML Body: Professional Student Template
     html_content = f"""
     <html>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h2 style="color: #2b5797;">AIC–SOA Foundation Inauguration</h2>
-        <p>Dear {name},</p>
+      <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8f9fa; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            
+            <div style="background-color: #2b5797; padding: 25px; text-align: center;">
+                <h2 style="color: #ffffff; margin: 0; font-size: 24px;">AIC–SOA Foundation</h2>
+                <p style="color: #e0e0e0; margin: 5px 0 0 0; font-size: 16px;">Inaugural Ceremony 2026</p>
+            </div>
 
-        <p>The much-awaited moment is here! We are delighted to invite you to the <strong>Inaugural Ceremony of AIC–SOA Foundation</strong>, scheduled at <strong>3:30 PM on 19th March 2026</strong>.</p>
+            <div style="padding: 30px;">
+                <p style="font-size: 16px;">Dear <strong>{name}</strong>,</p>
 
-        <p>This milestone marks the beginning of a strengthened innovation and entrepreneurship ecosystem, and your presence as a valued stakeholder will make the occasion even more meaningful. We also encourage Ecosystem Enablers & Startup Founders to join with their innovations and products during the event and engage with fellow founders, industry experts, and ecosystem partners.</p>
+                <p style="font-size: 15px;">We are thrilled to officially confirm your registration for the <strong>Inaugural Ceremony of the AIC–SOA Foundation!</strong></p>
 
-        <p><em>In case you are unable to attend personally, you may kindly nominate a representative to participate on your behalf.</em></p>
+                <p style="font-size: 15px;">As a student, you are a vital part of the future of innovation. This milestone event marks the beginning of a strengthened entrepreneurship ecosystem, and we are immensely excited to welcome you to connect with startup founders, industry experts, and ecosystem leaders.</p>
 
-        <div style="background-color: #f4f6f9; padding: 15px; border-left: 4px solid #2b5797; margin: 20px 0;">
-            <p style="margin: 0;"><strong>Your Entry ID:</strong> {uid}</p>
-            <p style="margin- 10px 0 0 0;">Please present the QR code below at the registration desk for seamless entry.</p>
+                <div style="background-color: #f0f4f8; border-left: 4px solid #2b5797; padding: 15px; margin: 25px 0;">
+                    <p style="margin: 0 0 5px 0; font-size: 14px; color: #555;"><strong>Date:</strong> 19th March 2026</p>
+                    <p style="margin: 0 0 5px 0; font-size: 14px; color: #555;"><strong>Time:</strong> 3:30 PM</p>
+                    <p style="margin: 0; font-size: 14px; color: #555;"><strong>Your Entry ID:</strong> <span style="background-color: #dfe6e9; padding: 2px 6px; border-radius: 4px;">{uid}</span></p>
+                </div>
+
+                <div style="text-align: center; margin: 30px 0;">
+                    <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Please present this QR code at the registration desk for seamless entry.</p>
+                    <img src="cid:qr_image" width="200" alt="Your Entry QR Code" style="border: 1px solid #ddd; border-radius: 8px; padding: 5px;"/>
+                </div>
+
+                <p style="text-align: center;">
+                    <a href="https://drive.google.com/file/d/16QuhxLkcRvCr8qTUIxitC2C9EQex68GI/view?usp=sharing" style="display: inline-block; background-color: #2b5797; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; font-size: 14px;">View Full Event Agenda</a>
+                </p>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+                
+                <p style="font-size: 14px; color: #777; margin: 0;">We look forward to welcoming you!</p>
+                <p style="font-size: 14px; color: #333; margin: 5px 0 0 0;">Warm regards,<br/><strong>Team AIC–SOA Foundation</strong></p>
+            </div>
         </div>
-
-        <img src="cid:qr_image" width="220" alt="Your Entry QR Code" style="display: block; margin: 10px 0;"/>
-
-        <p><strong>Event Agenda:</strong> <a href="https://drive.google.com/file/d/16QuhxLkcRvCr8qTUIxitC2C9EQex68GI/view?usp=sharing" style="color: #2b5797; text-decoration: none;">View Agenda Here</a></p>
-
-        <p>Your presence and support will greatly contribute to making this inauguration a grand success.<br/>
-        We look forward to welcoming you!</p>
-
-        <p>Warm regards,<br/><strong>Team AIC–SOA Foundation</strong></p>
       </body>
     </html>
     """
