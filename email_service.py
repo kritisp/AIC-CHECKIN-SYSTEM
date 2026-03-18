@@ -32,7 +32,7 @@ def send_qr_email(to_email: str, name: str, uid: str):
         return
 
     msg = EmailMessage()
-    msg["Subject"] = "AIC SOA 2026 | Your Entry QR Code"
+    msg["Subject"] = "Invitation: AIC–SOA Foundation Inaugural Ceremony"
     
     # Clean sender representation (important for avoid spam filters)
     # Brevo drops emails silently if the From address doesn't exactly match the account
@@ -44,38 +44,50 @@ def send_qr_email(to_email: str, name: str, uid: str):
     msg.set_content(f"""
 Dear {name},
 
-Thank you for registering for the AIC–SOA program.
+The much-awaited moment is here! We are delighted to invite you to the Inaugural Ceremony of AIC–SOA Foundation, scheduled at 3:30PM on 19th March 2026.
+
+This milestone marks the beginning of a strengthened innovation and entrepreneurship ecosystem, and your presence as a valued stakeholder will make the occasion even more meaningful. We also encourage Ecosystem Enablers & Startup Founders to join with their innovations and products during the event and engage with fellow founders, industry experts, and ecosystem partners.
+
+In case you are unable to attend personally, you may kindly nominate a representative to participate on your behalf.
 
 Your Entry ID: {uid}
-
 Please find your QR code attached to this email. Show this QR code at the venue entrance.
 
-Venue: SOA Convention Hall
-Date: 7 Feb 2026
+Event Agenda:
+https://drive.google.com/file/d/16QuhxLkcRvCr8qTUIxitC2C9EQex68GI/view?usp=sharing
 
-Regards,
-AIC SOA Foundation
+Your presence and support will greatly contribute to making this inauguration a grand success. We look forward to welcoming you!
+
+Warm regards,
+Team AIC–SOA Foundation
 """)
 
-    # HTML Body exactly matching old script
+    # HTML Body exactly matching new Inauguration script
     html_content = f"""
     <html>
-      <body style="font-family: Arial;">
-        <h2>AI for Education 2026</h2>
-        <p><strong>Policy • Practice • Future Pathways</strong></p>
-
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #2b5797;">AIC–SOA Foundation Inauguration</h2>
         <p>Dear {name},</p>
 
-        <p><strong>Your Entry ID:</strong> {uid}</p>
+        <p>The much-awaited moment is here! We are delighted to invite you to the <strong>Inaugural Ceremony of AIC–SOA Foundation</strong>, scheduled at <strong>3:30 PM on 19th March 2026</strong>.</p>
 
-        <img src="cid:qr_image" width="220" alt="QR Code"/>
+        <p>This milestone marks the beginning of a strengthened innovation and entrepreneurship ecosystem, and your presence as a valued stakeholder will make the occasion even more meaningful. We also encourage Ecosystem Enablers & Startup Founders to join with their innovations and products during the event and engage with fellow founders, industry experts, and ecosystem partners.</p>
 
-        <p>📍 SOA Convention Hall<br/>
-        🗓️ 7 Feb 2026</p>
+        <p><em>In case you are unable to attend personally, you may kindly nominate a representative to participate on your behalf.</em></p>
 
-        <p><strong>Please do not share this QR.</strong></p>
+        <div style="background-color: #f4f6f9; padding: 15px; border-left: 4px solid #2b5797; margin: 20px 0;">
+            <p style="margin: 0;"><strong>Your Entry ID:</strong> {uid}</p>
+            <p style="margin- 10px 0 0 0;">Please present the QR code below at the registration desk for seamless entry.</p>
+        </div>
 
-        <p>Regards,<br/>AIC SOA Foundation</p>
+        <img src="cid:qr_image" width="220" alt="Your Entry QR Code" style="display: block; margin: 10px 0;"/>
+
+        <p><strong>Event Agenda:</strong> <a href="https://drive.google.com/file/d/16QuhxLkcRvCr8qTUIxitC2C9EQex68GI/view?usp=sharing" style="color: #2b5797; text-decoration: none;">View Agenda Here</a></p>
+
+        <p>Your presence and support will greatly contribute to making this inauguration a grand success.<br/>
+        We look forward to welcoming you!</p>
+
+        <p>Warm regards,<br/><strong>Team AIC–SOA Foundation</strong></p>
       </body>
     </html>
     """
