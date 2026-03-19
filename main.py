@@ -237,12 +237,13 @@ def get_stats(user=Depends(require_role("admin"))):
         role = p.get("role") or "unknown"
         role_counts[role] = role_counts.get(role, 0) + 1
 
-    # Sort checked-in participants by checkin_time descending, take last 10
+    # Sort checked-in participants by checkin_time descending
     checked_in_list.sort(
         key=lambda p: p.get("checkin_time") or "",
         reverse=True
     )
-    recent = checked_in_list[:10]
+    # Return ALL of them instead of just the last 10 so the frontend can paginate and search
+    recent = checked_in_list
 
     return {
         "total_registrations": total,
@@ -254,6 +255,8 @@ def get_stats(user=Depends(require_role("admin"))):
                 "name": p.get("name"),
                 "email": p.get("email"),
                 "role": p.get("role"),
+                "college": p.get("college"),
+                "registration_number": p.get("registration_number"),
                 "checkin_time": p.get("checkin_time"),
             }
             for p in recent
