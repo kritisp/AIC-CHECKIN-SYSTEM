@@ -36,7 +36,7 @@ def send_qr_email(to_email: str, name: str, uid: str):
     
     # Clean sender representation (important for avoid spam filters)
     # Brevo drops emails silently if the From address doesn't exactly match the account
-    sender_email = "aicsoafoundation89@gmail.com" # The verified email on Brevo
+    sender_email = "aic.soa.2026@gmail.com" # The verified email on Brevo
     msg["From"] = f"AIC SOA <{sender_email}>"
     msg["To"] = to_email
 
