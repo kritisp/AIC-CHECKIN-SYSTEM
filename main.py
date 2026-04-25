@@ -81,7 +81,7 @@ def register_participant(payload: dict, background_tasks: BackgroundTasks):
         # ---------------------------------------------------
         # SEND EMAIL IN THE BACKGROUND
         # ---------------------------------------------------
-        background_tasks.add_task(send_qr_email, email, name, uid)
+        background_tasks.add_task(send_qr_email, email, name, uid, row["role"])
 
         return {
             "success": True,

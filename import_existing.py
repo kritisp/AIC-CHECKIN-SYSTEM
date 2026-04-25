@@ -25,12 +25,12 @@ def import_users():
             for row in reader:
                 # IMPORTANT: Update these keys to exactly match your CSV column headers
                 # Look at the first row of your CSV to see exactly what they are called.
-                name = row.get("Full Name", "")
-                email = row.get("Email Address", "") or row.get("Email ID", "")
+                name = row.get("Full Name", "") or row.get("Full Name ", "")
+                email = row.get("Email ID", "") or row.get("Email Address", "")
                 phone = row.get("Mobile Number", "")
-                college = row.get("Institute Name", "") or row.get("Organisation Name", "")
-                reg_num = row.get("Registration Number (for Students)", "")
-                role = "participant"
+                college = row.get("Name of the Institute ", "") or row.get("Name of the Institute", "") or row.get("Name of the Organisation", "")
+                reg_num = row.get("Registration Number", "")
+                role = row.get("Select your Profession", "Delegate")
                 
                 if not email:
                     continue # Skip empty rows

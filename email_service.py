@@ -10,8 +10,30 @@ load_dotenv()
 # We use standard SMTP variables that can point to Brevo, SendGrid, Resend, etc.
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp-relay.brevo.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_EMAIL = os.getenv("SMTP_EMAIL")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+
+# Automatically load up to 10 accounts from .env
+SMTP_ACCOUNTS = []
+
+# Fallback to single account if no numbered accounts exist
+if os.getenv("SMTP_EMAIL"):
+    SMTP_ACCOUNTS.append({
+        "email": os.getenv("SMTP_EMAIL"),
+        "password": os.getenv("SMTP_PASSWORD"),
+        "sender": "aic.soa.2026@gmail.com"
+    })
+
+for i in range(1, 11):
+    email = os.getenv(f"SMTP_EMAIL_{i}")
+    password = os.getenv(f"SMTP_PASSWORD_{i}")
+    sender = os.getenv(f"SMTP_SENDER_{i}") or "aic.soa.2026@gmail.com"
+    
+    if email and password:
+        SMTP_ACCOUNTS.append({
+            "email": email,
+            "password": password,
+            "sender": sender
+        })
+
 
 def generate_qr_bytes(uid: str) -> bytes:
     """Generates a QR code image entirely in memory and returns its bytes."""
@@ -25,117 +47,250 @@ def generate_qr_bytes(uid: str) -> bytes:
     return img_byte_arr.getvalue()
 
 
-def send_qr_email(to_email: str, name: str, uid: str):
-    """Generates the QR code and emails it to the participant."""
-    if not SMTP_EMAIL or not SMTP_PASSWORD:
-        print(f"Warning: SMTP credentials not set, email not sent to {to_email}.")
+def send_qr_email(to_email: str, name: str, uid: str, category: str = "delegate"):
+    """Generates the QR code and emails it, automatically falling back if an account limit is reached."""
+    if not SMTP_ACCOUNTS:
+        print(f"Warning: No SMTP accounts configured in .env, email not sent to {to_email}.")
         return
 
-    msg = EmailMessage()
-    msg["Subject"] = "Invitation: AIC–SOA Foundation Inaugural Ceremony"
+    # Determine the pass type and theme color based on category
+    cat_lower = category.lower() if category else "delegate"
     
-    # Clean sender representation (important for avoid spam filters)
-    # Brevo drops emails silently if the From address doesn't exactly match the account
-    sender_email = "aic.soa.2026@gmail.com" # The verified email on Brevo
-    msg["From"] = f"AIC SOA <{sender_email}>"
-    msg["To"] = to_email
+    if "student" in cat_lower:
+        pass_type = "Student Pass"
+        role_display = "Student"
+        theme_color = "#2563eb" # Blue Theme
+        theme_bg = "#eff6ff"
+        instructions_text = """
+📌 Helpful Guidelines
+- We kindly request you to arrive at least 30 minutes early to ensure a smooth check-in.
+- Our volunteer team will be happy to assist you throughout the event.
+- We appreciate your cooperation in maintaining a professional atmosphere during all sessions.
+"""
+        instructions_html = """
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #1a365d; font-size: 16px;">📌 Helpful Guidelines</h4>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6;">
+                        <li>We kindly request you to arrive <strong>at least 30 minutes early</strong> to ensure a smooth check-in process.</li>
+                        <li>Our volunteer team will be happy to assist you with any guidance throughout the event.</li>
+                        <li>We appreciate your cooperation in maintaining a positive and professional atmosphere during all sessions.</li>
+                    </ul>
+                </div>
+"""
+    else:
+        pass_type = "Delegate Pass"
+        role_display = category.title() if category else "Delegate"
+        theme_color = "#475569" # Professional Grey Theme
+        theme_bg = "#f8fafc"
+        instructions_text = """
+ℹ️ Event Information
+- Registration desks will be open 30 minutes prior to the event for a seamless check-in experience.
+- Dedicated help desks will be available at the venue to assist you.
+"""
+        instructions_html = """
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #1a365d; font-size: 16px;">ℹ️ Event Information</h4>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6;">
+                        <li>Registration desks will be open 30 minutes prior to the event for a seamless check-in experience.</li>
+                        <li>Dedicated help desks will be available at the venue to assist you.</li>
+                    </ul>
+                </div>
+"""
 
     # Plain text fallback
-    msg.set_content(f"""
+    plain_text_content = f"""
 Dear {name},
 
-We are thrilled to officially confirm your registration for the Inaugural Ceremony of the AIC–SOA Foundation!
+Greetings from SIKSHA ‘O’ ANUSANDHAN (Deemed to be University) and AIC–SOA Foundation.
 
-As a participant, you are the future of innovation. This milestone event marks the beginning of a vibrant entrepreneurship ecosystem, and we are excited to have you join us to connect with startup founders, industry experts, and ecosystem enablers.
+We are pleased to confirm your participation in the National Conclave on Cyber Security, AI & Emerging Technologies, scheduled on 29th & 30th April 2026 at Auditorium, Campus–2, SOA University, Bhubaneswar.
 
-Event Details:
-Date: 19th March 2026
-Time: 3:30 PM
-
+🎟️ Your Entry Pass
+Please find your QR Code attached. This will serve as your official entry pass for the event.
+Category: {pass_type}
 Your Entry ID: {uid}
-Please find your QR code attached to this email. You must present this QR code at the registration desk for seamless entry into the event.
 
-Event Agenda:
-https://drive.google.com/file/d/16QuhxLkcRvCr8qTUIxitC2C9EQex68GI/view?usp=sharing
+📌 Important:
+- Carry this QR code (printed or on your phone) for smooth entry
+- Entry will be granted only after scanning at the registration desk
 
-We look forward to welcoming you and building the future of innovation together!
+📅 Event Highlights
+- Expert talks on Cyber Security, AI & Emerging Technologies
+- Panel discussions with industry leaders
+- Innovation showcases & networking opportunities
+
+🕘 Reporting Details
+- Date: 29th April 2026
+- Reporting Time: 10:00 AM
+- Venue: Auditorium, Campus–2, SOA University
+{instructions_text}
+📝 Note (Very Important)
+- After the event, you will receive a Feedback Form
+- Submission of the feedback form is mandatory
+- 🎓 Participation Certificates will be issued only after completing the feedback form
+
+We look forward to your presence at this prestigious conclave.
+For any queries, feel free to contact the organizing team.
 
 Warm regards,
-Team AIC–SOA Foundation
-""")
+Organizing Committee
+National Conclave on Cyber Security, AI & Emerging Technologies
+SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)
+Bhubaneswar, Odisha
+"""
 
-    # HTML Body: Professional Student Template
+    # HTML Body: Boarding Pass Ticket Layout
     html_content = f"""
     <html>
-      <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8f9fa; padding: 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+      <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f6; padding: 20px;">
+        <div style="max-width: 700px; margin: 0 auto;">
             
-            <div style="background-color: #2b5797; padding: 25px; text-align: center;">
-                <h2 style="color: #ffffff; margin: 0; font-size: 24px;">AIC–SOA Foundation</h2>
-                <p style="color: #e0e0e0; margin: 5px 0 0 0; font-size: 16px;">Inaugural Ceremony 2026</p>
+            <p style="font-size: 16px; margin-top: 0;">Dear <strong>{name}</strong>,</p>
+            <p style="font-size: 15px;">Greetings from <strong>SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)</strong> and <strong>AIC–SOA Foundation</strong>.</p>
+            <p style="font-size: 15px; margin-bottom: 25px;">We are pleased to confirm your participation in the <strong>National Conclave on Cyber Security, AI & Emerging Technologies</strong>.</p>
+
+            <!-- BOARDING PASS TICKET -->
+            <div style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 30px;">
+                
+                <!-- Ticket Header -->
+                <div style="background-color: {theme_color}; padding: 15px 20px; color: #ffffff;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td align="left" style="font-size: 18px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">
+                                {pass_type}
+                            </td>
+                            <td align="right" style="font-size: 14px; font-weight: 500; opacity: 0.9;">
+                                NATIONAL CONCLAVE '26
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Ticket Body -->
+                <div style="padding: 0;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: {theme_bg};">
+                        <tr>
+                            <!-- Left Section: Details -->
+                            <td width="70%" valign="top" style="padding: 25px; border-right: 2px dashed #cbd5e1;">
+                                <div style="margin-bottom: 15px;">
+                                    <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Participant Name</span><br/>
+                                    <strong style="font-size: 20px; color: #0f172a;">{name}</strong>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Category</span><br/>
+                                    <strong style="font-size: 16px; color: {theme_color};">{role_display}</strong>
+                                </div>
+
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                    <tr>
+                                        <td width="50%" valign="top">
+                                            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date</span><br/>
+                                            <strong style="font-size: 14px; color: #0f172a;">29 Apr 2026</strong>
+                                        </td>
+                                        <td width="50%" valign="top">
+                                            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Reporting Time</span><br/>
+                                            <strong style="font-size: 14px; color: #0f172a;">10:00 AM</strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <div style="margin-top: 15px;">
+                                    <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Venue</span><br/>
+                                    <strong style="font-size: 14px; color: #0f172a;">Auditorium, Campus–2, SOA University</strong>
+                                </div>
+                            </td>
+                            
+                            <!-- Right Section: QR Code -->
+                            <td width="30%" valign="middle" align="center" style="padding: 20px; background-color: #ffffff;">
+                                <div style="font-size: 12px; color: #64748b; margin-bottom: 10px; text-transform: uppercase; font-weight: bold;">Official Entry Pass</div>
+                                <img src="cid:qr_image" width="130" alt="QR Code" style="display: block; margin: 0 auto;"/>
+                                <div style="margin-top: 10px; font-family: monospace; font-size: 14px; color: #334155; background-color: #f1f5f9; padding: 4px 8px; border-radius: 4px; display: inline-block;">{uid}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Ticket Footer -->
+                <div style="background-color: #f8fafc; padding: 12px 20px; text-align: center; font-size: 12px; color: #475569; border-top: 1px solid #e2e8f0;">
+                    <strong>📌 Important:</strong> Please present this ticket (printed or digital) at the registration desk.
+                </div>
             </div>
 
-            <div style="padding: 30px;">
-                <p style="font-size: 16px;">Dear <strong>{name}</strong>,</p>
-
-                <p style="font-size: 15px;">We are thrilled to officially confirm your registration for the <strong>Inaugural Ceremony of the AIC–SOA Foundation!</strong></p>
-
-                <p style="font-size: 15px;">As a participant, you are a vital part of the future of innovation. This milestone event marks the beginning of a strengthened entrepreneurship ecosystem, and we are immensely excited to welcome you to connect with startup founders, industry experts, and ecosystem leaders.</p>
-
-                <div style="background-color: #f0f4f8; border-left: 4px solid #2b5797; padding: 15px; margin: 25px 0;">
-                    <p style="margin: 0 0 5px 0; font-size: 14px; color: #555;"><strong>Date:</strong> 19th March 2026</p>
-                    <p style="margin: 0 0 5px 0; font-size: 14px; color: #555;"><strong>Time:</strong> 3:30 PM</p>
-                    <p style="margin: 0; font-size: 14px; color: #555;"><strong>Your Entry ID:</strong> <span style="background-color: #dfe6e9; padding: 2px 6px; border-radius: 4px;">{uid}</span></p>
+            <!-- Other details below the ticket -->
+            <div style="background-color: #ffffff; border-radius: 12px; padding: 30px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #1a365d; font-size: 16px;">📅 Event Highlights</h4>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6;">
+                        <li>Expert talks on Cyber Security, AI & Emerging Technologies</li>
+                        <li>Panel discussions with industry leaders</li>
+                        <li>Innovation showcases & networking opportunities</li>
+                    </ul>
+                </div>
+{instructions_html}
+                <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 30px;">
+                    <h4 style="margin: 0 0 5px 0; color: #991b1b; font-size: 15px;">📝 Note (Mandatory)</h4>
+                    <p style="margin: 0; font-size: 13px; color: #7f1d1d; line-height: 1.5;">After the event, you will receive a Feedback Form. Submission is mandatory to receive your Participation Certificate.</p>
                 </div>
 
-                <div style="text-align: center; margin: 30px 0;">
-                    <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Please present this QR code at the registration desk for seamless entry.</p>
-                    <img src="cid:qr_image" width="200" alt="Your Entry QR Code" style="border: 1px solid #ddd; border-radius: 8px; padding: 5px;"/>
-                </div>
-
-                <p style="text-align: center;">
-                    <a href="https://drive.google.com/file/d/16QuhxLkcRvCr8qTUIxitC2C9EQex68GI/view?usp=sharing" style="display: inline-block; background-color: #2b5797; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; font-size: 14px;">View Full Event Agenda</a>
-                </p>
-
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 25px 0;" />
                 
-                <p style="font-size: 14px; color: #777; margin: 0;">We look forward to welcoming you!</p>
-                <p style="font-size: 14px; color: #333; margin: 5px 0 0 0;">Warm regards,<br/><strong>Team AIC–SOA Foundation</strong></p>
+                <div style="font-size: 14px; color: #334155; line-height: 1.5;">
+                    <p style="margin: 0;">Warm regards,</p>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; font-size: 16px; color: #1a365d;">Organizing Committee</p>
+                    <p style="margin: 0;">National Conclave on Cyber Security, AI & Emerging Technologies</p>
+                    <p style="margin: 0;">SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)</p>
+                    <p style="margin: 0;">Bhubaneswar, Odisha</p>
+                </div>
             </div>
         </div>
       </body>
     </html>
     """
-    
-    msg.add_alternative(html_content, subtype="html")
 
-    # Generate the QR code image
+    # Generate the QR code image ONCE per participant
     qr_bytes = generate_qr_bytes(uid)
     
-    # Attach the QR code and assign a Content-ID so the HTML <img> tag can reference it
-    # We add it as an attachment, but specify it's an inline cid reference.
-    msg.add_attachment(qr_bytes, maintype='image', subtype='png', filename=f'AIC_QR_{uid}.png', cid="<qr_image>")
+    # Try sending with each account in the list until one succeeds
+    for i, account in enumerate(SMTP_ACCOUNTS):
+        # We MUST create a fresh EmailMessage for each attempt to avoid duplicate attachments or errors
+        msg = EmailMessage()
+        msg["Subject"] = f"Your {pass_type} – National Conclave on Cyber Security, AI & Emerging Technologies"
+        msg["From"] = f"AIC SOA <{account['sender']}>"
+        msg["To"] = to_email
+        msg.set_content(plain_text_content)
+        msg.add_alternative(html_content, subtype="html")
+        msg.add_attachment(qr_bytes, maintype='image', subtype='png', filename=f'AIC_QR_{uid}.png', cid="<qr_image>")
 
-    try:
-        # Connect to dynamic SMTP server (usually port 587 requires STARTTLS)
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            if SMTP_PORT in (587, 2525):
-                server.starttls()
-            server.login(SMTP_EMAIL, SMTP_PASSWORD)
-            server.send_message(msg)
-            print(f"Successfully sent QR email to {to_email} on port {SMTP_PORT}")
-            
-    except OSError as oe:
-        print(f"Port {SMTP_PORT} timed out/failed (likely blocked by Render firewall). Retrying on fallback port 2525...")
         try:
-            # Render blocks port 25, 465, and 587 on their Free Tier. Port 2525 is often unfiltered.
-            with smtplib.SMTP(SMTP_SERVER, 2525) as server:
-                server.starttls()
-                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                if SMTP_PORT in (587, 2525):
+                    server.starttls()
+                server.login(account["email"], account["password"])
                 server.send_message(msg)
-                print(f"Successfully sent QR email to {to_email} on fallback port 2525")
-        except Exception as e2:
-            print(f"Fallback port 2525 also failed for {to_email}: {e2}")
-            
-    except Exception as e:
-        print(f"Failed to send email to {to_email}: {e}")
+                print(f"✅ Successfully sent QR to {to_email} using Account {i+1} ({account['email']})")
+                return # Exit the function, success!
+                
+        except smtplib.SMTPException as e:
+            print(f"⚠️ Account {i+1} ({account['email']}) failed (Limit reached or bad credentials): {e}")
+            if i < len(SMTP_ACCOUNTS) - 1:
+                print(f"🔄 Switching to Account {i+2}...")
+            else:
+                print(f"❌ CRITICAL ERROR: All {len(SMTP_ACCOUNTS)} accounts failed for {to_email}.")
+                
+        except OSError as oe:
+            # Handle Render firewall blocked ports
+            print(f"Port {SMTP_PORT} blocked. Retrying on fallback port 2525 for Account {i+1}...")
+            try:
+                with smtplib.SMTP(SMTP_SERVER, 2525) as server:
+                    server.starttls()
+                    server.login(account["email"], account["password"])
+                    server.send_message(msg)
+                    print(f"✅ Sent QR to {to_email} using Account {i+1} on fallback port 2525")
+                    return
+            except Exception as e2:
+                print(f"⚠️ Account {i+1} failed on fallback port: {e2}")
+                if i < len(SMTP_ACCOUNTS) - 1:
+                    print(f"🔄 Switching to Account {i+2}...")
+                else:
+                    print(f"❌ CRITICAL ERROR: All {len(SMTP_ACCOUNTS)} accounts failed for {to_email}.")
