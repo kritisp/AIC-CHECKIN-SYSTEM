@@ -5,27 +5,35 @@ function onFormSubmit(e) {
   // The responses from the form
   var responses = e.namedValues;
   
-  // Helper to safely get the first value of an array if it exists
+  // Helper to safely get the first non-empty value of an array 
+  // (Crucial for handling duplicate column names like "Name of the Institute ")
   function getVal(key) {
-    return responses[key] ? responses[key][0] : "";
+    if (!responses[key]) return "";
+    for (var i = 0; i < responses[key].length; i++) {
+      if (responses[key][i] && responses[key][i].trim() !== "") {
+        return responses[key][i].trim();
+      }
+    }
+    return "";
   }
   
-  // Extract values based on EXACT column names in Google Sheet
-  // Note: "Email Address" is usually the default for auto-collected emails
+  // Extract values based on EXACT column names in the Google Sheet
   var name = getVal("Full Name") || getVal("Full Name ");
-  var email = getVal("Email Address") || getVal("Email ID");
+  
+  // Prioritize manually typed Email ID, fallback to Google's Auto-collected Email Address
+  var email = getVal("Email ID") || getVal("Email Address");
+  
   var phone = getVal("Mobile Number");
   
-  // Profession -> Role
-  // Options: Student, Academician, Industrialist, Others
+  // Profession -> Role (Student, Academician, Industrialist, Others)
   var profession = getVal("Select your Profession") || "Delegate"; 
   
-  // College/Organisation (can be in different sections)
-  var college = getVal("Name of the Institute ") || getVal("Name of the Institute") || getVal("Name of the Organisation");
+  // College/Organisation (can be in different sections depending on category)
+  var college = getVal("Name of the Institute ") || getVal("Name of the Institute") || getVal("Name of the Organisation") || getVal("Organisation Name");
   
-  var regNum = getVal("Registration Number");
+  var regNum = getVal("Registration Number") || getVal("Registration Number (for Students)");
 
-  // We map 'Profession' to the 'role' field in the backend
+  // Map everything to the payload expected by your backend
   var payload = {
     "name": name,
     "email": email,

@@ -121,7 +121,7 @@ Your Entry ID: {uid}
 
 🕘 Reporting Details
 - Date: 29th April 2026
-- Reporting Time: 10:00 AM
+- Reporting Time: 8:30 AM
 - Venue: Auditorium, Campus–2, SOA University
 {instructions_text}
 📝 Note (Very Important)
@@ -184,7 +184,7 @@ Bhubaneswar, Odisha
                             </td>
                             <td width="50%" valign="top">
                                 <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Reporting</div>
-                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">10:00 AM</div>
+                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">8:30 AM</div>
                             </td>
                         </tr>
                     </table>

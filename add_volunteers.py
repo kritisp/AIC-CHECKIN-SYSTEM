@@ -2,17 +2,17 @@ from auth_utils import hash_password
 from supabase_client import supabase
 
 def setup_users():
-    # Lists of new users, their passwords, and their roles
+    # Lists of users to ensure they have the exact known password
     groups = [
         {
-            "users": ["volunteer4", "volunteer5", "volunteer6", "volunteer7"],
-            "password": "volunteer123",
-            "role": "volunteer"
-        },
-        {
-            "users": ["admin2", "admin3"],
+            "users": ["admin", "admin2"],
             "password": "admin123",
             "role": "admin"
+        },
+        {
+            "users": ["volunteer1", "volunteer2", "volunteer3", "volunteer4", "volunteer5", "volunteer6"],
+            "password": "volunteer123",
+            "role": "volunteer"
         }
     ]
 
@@ -21,13 +21,6 @@ def setup_users():
         hashed_password = hash_password(group["password"])
         
         for username in group["users"]:
-            # Check if the user already exists
-            existing = supabase.table("users").select("id").eq("username", username).execute()
-            
-            if existing.data:
-                print(f"[SKIPPING] {username} already exists.")
-                continue
-                
             row = {
                 "username": username,
                 "password_hash": hashed_password,
@@ -35,11 +28,11 @@ def setup_users():
                 "active": True
             }
             
-            # Insert them into the 'users' table
-            supabase.table("users").insert(row).execute()
-            print(f"Successfully added {username}!")
+            # UPSERT them into the 'users' table
+            supabase.table("users").upsert(row, on_conflict="username").execute()
+            print(f"Successfully updated/added {username} with the new password!")
 
-    print("\nAll new accounts have been freshly injected into Supabase!")
+    print("\nAll accounts have been freshly updated in Supabase!")
 
 if __name__ == "__main__":
     setup_users()
