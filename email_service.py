@@ -63,7 +63,6 @@ def send_qr_email(to_email: str, name: str, uid: str, category: str = "delegate"
         theme_bg = "#eff6ff"
         instructions_text = """
 📌 Helpful Guidelines
-- We kindly request you to arrive at least 30 minutes early to ensure a smooth check-in.
 - Our volunteer team will be happy to assist you throughout the event.
 - We appreciate your cooperation in maintaining a professional atmosphere during all sessions.
 """
@@ -71,7 +70,6 @@ def send_qr_email(to_email: str, name: str, uid: str, category: str = "delegate"
                 <div style="margin-bottom: 20px;">
                     <h4 style="margin: 0 0 10px 0; color: #1a365d; font-size: 16px;">📌 Helpful Guidelines</h4>
                     <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6;">
-                        <li>We kindly request you to arrive <strong>at least 30 minutes early</strong> to ensure a smooth check-in process.</li>
                         <li>Our volunteer team will be happy to assist you with any guidance throughout the event.</li>
                         <li>We appreciate your cooperation in maintaining a positive and professional atmosphere during all sessions.</li>
                     </ul>
@@ -84,14 +82,12 @@ def send_qr_email(to_email: str, name: str, uid: str, category: str = "delegate"
         theme_bg = "#f8fafc"
         instructions_text = """
 ℹ️ Event Information
-- Registration desks will be open 30 minutes prior to the event for a seamless check-in experience.
 - Dedicated help desks will be available at the venue to assist you.
 """
         instructions_html = """
                 <div style="margin-bottom: 20px;">
                     <h4 style="margin: 0 0 10px 0; color: #1a365d; font-size: 16px;">ℹ️ Event Information</h4>
                     <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6;">
-                        <li>Registration desks will be open 30 minutes prior to the event for a seamless check-in experience.</li>
                         <li>Dedicated help desks will be available at the venue to assist you.</li>
                     </ul>
                 </div>
@@ -121,7 +117,7 @@ Your Entry ID: {uid}
 
 🕘 Reporting Details
 - Date: 29th April 2026
-- Reporting Time: 8:30 AM
+- Reporting Time: 9:00 AM
 - Venue: Auditorium, Campus–2, SOA University
 {instructions_text}
 📝 Note (Very Important)
@@ -184,7 +180,7 @@ Bhubaneswar, Odisha
                             </td>
                             <td width="50%" valign="top">
                                 <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Reporting</div>
-                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">8:30 AM</div>
+                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">9:00 AM</div>
                             </td>
                         </tr>
                     </table>
