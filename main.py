@@ -134,6 +134,44 @@ def scan_participant(payload: dict, user=Depends(get_current_user)):
 
 
 # --------------------------------------------------
+# UPDATE PARTICIPANT
+# --------------------------------------------------
+
+@app.put("/update-participant")
+def update_participant(payload: dict, user=Depends(get_current_user)):
+    uid = payload.get("uid")
+
+    if not uid:
+        raise HTTPException(status_code=400, detail="UID is required")
+
+    # Extract valid fields to update
+    update_data = {}
+    for field in ["name", "email", "phone", "college", "role", "registration_number"]:
+        if field in payload:
+            update_data[field] = payload[field]
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No valid fields to update provided")
+
+    # Update in Supabase
+    result = (
+        supabase.table("participants")
+        .update(update_data)
+        .eq("uid", uid)
+        .execute()
+    )
+
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Participant not found")
+
+    return {
+        "success": True,
+        "message": "Participant details updated successfully",
+        "participant": result.data[0]
+    }
+
+
+# --------------------------------------------------
 # CONFIRM CHECK-IN
 # --------------------------------------------------
 
