@@ -139,110 +139,86 @@ SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)
 Bhubaneswar, Odisha
 """
 
-    # HTML Body: Boarding Pass Ticket Layout
+    # HTML Body: Mobile-Friendly Portrait Ticket Layout
     html_content = f"""
     <html>
-      <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f6; padding: 20px;">
-        <div style="max-width: 700px; margin: 0 auto;">
-            
-            <p style="font-size: 16px; margin-top: 0;">Dear <strong>{name}</strong>,</p>
-            <p style="font-size: 15px;">Greetings from <strong>SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)</strong> and <strong>AIC–SOA Foundation</strong>.</p>
-            <p style="font-size: 15px; margin-bottom: 25px;">We are pleased to confirm your participation in the <strong>National Conclave on Cyber Security, AI & Emerging Technologies</strong>.</p>
+      <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f6; padding: 20px 10px; margin: 0;">
+        
+        <!-- Greeting Section -->
+        <div style="max-width: 450px; margin: 0 auto 20px auto; text-align: center;">
+            <p style="font-size: 16px; margin-top: 0; margin-bottom: 5px;">Dear <strong>{name}</strong>,</p>
+            <p style="font-size: 14px; margin-bottom: 5px;">Welcome to the <strong>National Conclave on Cyber Security, AI & Emerging Technologies</strong>.</p>
+        </div>
 
-            <!-- BOARDING PASS TICKET -->
-            <div style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 30px;">
-                
-                <!-- Ticket Header -->
-                <div style="background-color: {theme_color}; padding: 15px 20px; color: #ffffff;">
+        <!-- PORTRAIT TICKET -->
+        <div style="max-width: 400px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+            
+            <!-- Header Banner -->
+            <div style="background-color: {theme_color}; padding: 30px 20px; text-align: center; color: #ffffff;">
+                <div style="font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; opacity: 0.9;">
+                    Official Entry Pass
+                </div>
+                <div style="font-size: 24px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin: 0;">
+                    {pass_type}
+                </div>
+            </div>
+
+            <!-- Body Details -->
+            <div style="padding: 30px 25px; background-color: {theme_bg};">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Participant Name</div>
+                    <div style="font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.2;">{name}</div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Category</div>
+                    <div style="font-size: 18px; font-weight: 600; color: {theme_color};">{role_display}</div>
+                </div>
+
+                <div style="background-color: #ffffff; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                     <table width="100%" cellpadding="0" cellspacing="0" border="0">
                         <tr>
-                            <td align="left" style="font-size: 18px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">
-                                {pass_type}
+                            <td width="50%" valign="top" style="border-right: 1px solid #e2e8f0;">
+                                <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date</div>
+                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">29 Apr 2026</div>
                             </td>
-                            <td align="right" style="font-size: 14px; font-weight: 500; opacity: 0.9;">
-                                NATIONAL CONCLAVE '26
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Ticket Body -->
-                <div style="padding: 0;">
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: {theme_bg};">
-                        <tr>
-                            <!-- Left Section: Details -->
-                            <td width="70%" valign="top" style="padding: 25px; border-right: 2px dashed #cbd5e1;">
-                                <div style="margin-bottom: 15px;">
-                                    <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Participant Name</span><br/>
-                                    <strong style="font-size: 20px; color: #0f172a;">{name}</strong>
-                                </div>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Category</span><br/>
-                                    <strong style="font-size: 16px; color: {theme_color};">{role_display}</strong>
-                                </div>
-
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                    <tr>
-                                        <td width="50%" valign="top">
-                                            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date</span><br/>
-                                            <strong style="font-size: 14px; color: #0f172a;">29 Apr 2026</strong>
-                                        </td>
-                                        <td width="50%" valign="top">
-                                            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Reporting Time</span><br/>
-                                            <strong style="font-size: 14px; color: #0f172a;">10:00 AM</strong>
-                                        </td>
-                                    </tr>
-                                </table>
-                                
-                                <div style="margin-top: 15px;">
-                                    <span style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold;">Venue</span><br/>
-                                    <strong style="font-size: 14px; color: #0f172a;">Auditorium, Campus–2, SOA University</strong>
-                                </div>
-                            </td>
-                            
-                            <!-- Right Section: QR Code -->
-                            <td width="30%" valign="middle" align="center" style="padding: 20px; background-color: #ffffff;">
-                                <div style="font-size: 12px; color: #64748b; margin-bottom: 10px; text-transform: uppercase; font-weight: bold;">Official Entry Pass</div>
-                                <img src="cid:qr_image" width="130" alt="QR Code" style="display: block; margin: 0 auto;"/>
-                                <div style="margin-top: 10px; font-family: monospace; font-size: 14px; color: #334155; background-color: #f1f5f9; padding: 4px 8px; border-radius: 4px; display: inline-block;">{uid}</div>
+                            <td width="50%" valign="top">
+                                <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Reporting</div>
+                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">10:00 AM</div>
                             </td>
                         </tr>
                     </table>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                        <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Venue</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #0f172a; margin-top: 4px;">Auditorium, Campus–2, SOA</div>
+                    </div>
                 </div>
-                
-                <!-- Ticket Footer -->
-                <div style="background-color: #f8fafc; padding: 12px 20px; text-align: center; font-size: 12px; color: #475569; border-top: 1px solid #e2e8f0;">
-                    <strong>📌 Important:</strong> Please present this ticket (printed or digital) at the registration desk.
+
+                <!-- QR Code Section -->
+                <div style="text-align: center; background-color: #ffffff; padding: 25px; border-radius: 12px; border: 2px dashed #cbd5e1;">
+                    <img src="cid:qr_image" width="180" alt="QR Code" style="display: block; margin: 0 auto;"/>
+                    <div style="margin-top: 15px; font-family: monospace; font-size: 16px; color: #334155; font-weight: 600; letter-spacing: 2px; background-color: #f1f5f9; padding: 8px; border-radius: 6px; display: inline-block;">{uid}</div>
                 </div>
             </div>
 
-            <!-- Other details below the ticket -->
-            <div style="background-color: #ffffff; border-radius: 12px; padding: 30px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-                <div style="margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 10px 0; color: #1a365d; font-size: 16px;">📅 Event Highlights</h4>
-                    <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6;">
-                        <li>Expert talks on Cyber Security, AI & Emerging Technologies</li>
-                        <li>Panel discussions with industry leaders</li>
-                        <li>Innovation showcases & networking opportunities</li>
-                    </ul>
+            <!-- Ticket Footer -->
+            <div style="background-color: #f8fafc; padding: 25px 20px; border-top: 1px solid #e2e8f0; text-align: left;">
+                <div style="text-align: center; font-size: 13px; color: #475569; margin-bottom: 25px; background-color: #e2e8f0; padding: 10px; border-radius: 8px;">
+                    <strong>📌 Important:</strong> Please present this pass at the registration desk.
                 </div>
-{instructions_html}
-                <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 30px;">
-                    <h4 style="margin: 0 0 5px 0; color: #991b1b; font-size: 15px;">📝 Note (Mandatory)</h4>
-                    <p style="margin: 0; font-size: 13px; color: #7f1d1d; line-height: 1.5;">After the event, you will receive a Feedback Form. Submission is mandatory to receive your Participation Certificate.</p>
-                </div>
-
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 25px 0;" />
                 
-                <div style="font-size: 14px; color: #334155; line-height: 1.5;">
-                    <p style="margin: 0;">Warm regards,</p>
-                    <p style="margin: 5px 0 0 0; font-weight: bold; font-size: 16px; color: #1a365d;">Organizing Committee</p>
-                    <p style="margin: 0;">National Conclave on Cyber Security, AI & Emerging Technologies</p>
-                    <p style="margin: 0;">SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)</p>
-                    <p style="margin: 0;">Bhubaneswar, Odisha</p>
+                {instructions_html}
+                
+                <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-top: 20px; border-radius: 0 8px 8px 0;">
+                    <h4 style="margin: 0 0 5px 0; color: #991b1b; font-size: 14px;">📝 Note (Mandatory)</h4>
+                    <p style="margin: 0; font-size: 12px; color: #7f1d1d; line-height: 1.5;">Submission of the Feedback Form after the event is mandatory to receive your Participation Certificate.</p>
                 </div>
             </div>
+        </div>
+
+        <div style="max-width: 450px; margin: 30px auto 0 auto; text-align: center; font-size: 13px; color: #64748b; line-height: 1.5;">
+            <p style="margin: 0;">Warm regards,<br/><strong style="color: #334155;">Organizing Committee</strong></p>
+            <p style="margin: 5px 0 0 0;">National Conclave on Cyber Security, AI & Emerging Technologies<br/>SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)</p>
         </div>
       </body>
     </html>

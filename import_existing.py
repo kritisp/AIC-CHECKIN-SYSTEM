@@ -15,22 +15,36 @@ BACKEND_URL = "https://aic-checkin-system.onrender.com/register"
 def import_users():
     try:
         with open(CSV_FILE_PATH, mode='r', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            
-            # Print the columns found to help debug if names don't match
-            print(f"Found columns in CSV: {reader.fieldnames}")
+            reader = csv.reader(file)
+            headers = next(reader)
+            print(f"Found headers in CSV: {headers}")
             
             success_count = 0
             
             for row in reader:
-                # IMPORTANT: Update these keys to exactly match your CSV column headers
-                # Look at the first row of your CSV to see exactly what they are called.
-                name = row.get("Full Name", "") or row.get("Full Name ", "")
-                email = row.get("Email ID", "") or row.get("Email Address", "")
-                phone = row.get("Mobile Number", "")
-                college = row.get("Name of the Institute ", "") or row.get("Name of the Institute", "") or row.get("Name of the Organisation", "")
-                reg_num = row.get("Registration Number", "")
-                role = row.get("Select your Profession", "Delegate")
+                if not row or len(row) < 5:
+                    continue
+                    
+                # Based on the CSV structure:
+                # 0: Timestamp, 1: Email Address, 2: Full Name, 3: Mobile Number, 4: Email ID
+                # 5: Select your Profession
+                # 6: Institute (Student), 7: Dept, 8: Reg Num
+                # 9: Designation, 10: Institute (Academician), 11: Dept
+                # 12: Designation, 13: Organisation (Industrialist), 14: Dept
+                # 15: Organisation (Others)
+                
+                name = row[2].strip() if len(row) > 2 else ""
+                email = row[4].strip() if len(row) > 4 and row[4].strip() else (row[1].strip() if len(row) > 1 else "")
+                phone = row[3].strip() if len(row) > 3 else ""
+                role = row[5].strip() if len(row) > 5 else "Delegate"
+                reg_num = row[8].strip() if len(row) > 8 else ""
+                
+                # Find the college/organisation by checking all possible columns
+                college = ""
+                for idx in [6, 10, 13, 15]:
+                    if len(row) > idx and row[idx].strip():
+                        college = row[idx].strip()
+                        break
                 
                 if not email:
                     continue # Skip empty rows
