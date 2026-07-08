@@ -97,9 +97,9 @@ def send_qr_email(to_email: str, name: str, uid: str, category: str = "delegate"
     plain_text_content = f"""
 Dear {name},
 
-Greetings from SIKSHA ‘O’ ANUSANDHAN (Deemed to be University) and AIC–SOA Foundation.
+Greetings from SIKSHA ‘O’ ANUSANDHAN (Deemed to be University) and INAE.
 
-We are pleased to confirm your participation in the National Conclave on Cyber Security, AI & Emerging Technologies, scheduled on 29th & 30th April 2026 at Auditorium, Campus–2, SOA University, Bhubaneswar.
+We are pleased to confirm your participation in the INAE Technology Conclave 2026, scheduled on 11th & 12th July 2026 at Campus-II, SOA University, Bhubaneswar.
 
 🎟️ Your Entry Pass
 Please find your QR Code attached. This will serve as your official entry pass for the event.
@@ -111,14 +111,14 @@ Your Entry ID: {uid}
 - Entry will be granted only after scanning at the registration desk
 
 📅 Event Highlights
-- Expert talks on Cyber Security, AI & Emerging Technologies
-- Panel discussions with industry leaders
+- Flagship program for engineering research, faculty, and professional discourse
+- Panel discussions and expert talks
 - Innovation showcases & networking opportunities
 
 🕘 Reporting Details
-- Date: 29th April 2026
+- Date: 11th July 2026
 - Reporting Time: 9:00 AM
-- Venue: Auditorium, Campus–2, SOA University
+- Venue: Campus-II, SOA University
 {instructions_text}
 📝 Note (Very Important)
 - After the event, you will receive a Feedback Form
@@ -130,7 +130,7 @@ For any queries, feel free to contact the organizing team.
 
 Warm regards,
 Organizing Committee
-National Conclave on Cyber Security, AI & Emerging Technologies
+INAE Technology Conclave 2026
 SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)
 Bhubaneswar, Odisha
 """
@@ -143,7 +143,7 @@ Bhubaneswar, Odisha
         <!-- Greeting Section -->
         <div style="max-width: 450px; margin: 0 auto 20px auto; text-align: center;">
             <p style="font-size: 16px; margin-top: 0; margin-bottom: 5px;">Dear <strong>{name}</strong>,</p>
-            <p style="font-size: 14px; margin-bottom: 5px;">Welcome to the <strong>National Conclave on Cyber Security, AI & Emerging Technologies</strong>.</p>
+            <p style="font-size: 14px; margin-bottom: 5px;">Welcome to the <strong>INAE Technology Conclave 2026</strong>.</p>
         </div>
 
         <!-- PORTRAIT TICKET -->
@@ -176,7 +176,7 @@ Bhubaneswar, Odisha
                         <tr>
                             <td width="50%" valign="top" style="border-right: 1px solid #e2e8f0;">
                                 <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Date</div>
-                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">29 Apr 2026</div>
+                                <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 4px;">11 Jul 2026</div>
                             </td>
                             <td width="50%" valign="top">
                                 <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Reporting</div>
@@ -186,7 +186,7 @@ Bhubaneswar, Odisha
                     </table>
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
                         <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Venue</div>
-                        <div style="font-size: 14px; font-weight: 600; color: #0f172a; margin-top: 4px;">Auditorium, Campus–2, SOA</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #0f172a; margin-top: 4px;">Campus-II, SOA University</div>
                     </div>
                 </div>
 
@@ -214,7 +214,7 @@ Bhubaneswar, Odisha
 
         <div style="max-width: 450px; margin: 30px auto 0 auto; text-align: center; font-size: 13px; color: #64748b; line-height: 1.5;">
             <p style="margin: 0;">Warm regards,<br/><strong style="color: #334155;">Organizing Committee</strong></p>
-            <p style="margin: 5px 0 0 0;">National Conclave on Cyber Security, AI & Emerging Technologies<br/>SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)</p>
+            <p style="margin: 5px 0 0 0;">INAE Technology Conclave 2026<br/>SIKSHA ‘O’ ANUSANDHAN (Deemed to be University)</p>
         </div>
       </body>
     </html>
@@ -227,7 +227,7 @@ Bhubaneswar, Odisha
     for i, account in enumerate(SMTP_ACCOUNTS):
         # We MUST create a fresh EmailMessage for each attempt to avoid duplicate attachments or errors
         msg = EmailMessage()
-        msg["Subject"] = f"Your {pass_type} – National Conclave on Cyber Security, AI & Emerging Technologies"
+        msg["Subject"] = f"Your {pass_type} – INAE Technology Conclave 2026"
         msg["From"] = f"AIC SOA <{account['sender']}>"
         msg["To"] = to_email
         msg.set_content(plain_text_content)
@@ -240,15 +240,15 @@ Bhubaneswar, Odisha
                     server.starttls()
                 server.login(account["email"], account["password"])
                 server.send_message(msg)
-                print(f"✅ Successfully sent QR to {to_email} using Account {i+1} ({account['email']})")
+                print(f"[SUCCESS] Successfully sent QR to {to_email} using Account {i+1} ({account['email']})")
                 return # Exit the function, success!
                 
         except smtplib.SMTPException as e:
-            print(f"⚠️ Account {i+1} ({account['email']}) failed (Limit reached or bad credentials): {e}")
+            print(f"[WARNING] Account {i+1} ({account['email']}) failed (Limit reached or bad credentials): {e}")
             if i < len(SMTP_ACCOUNTS) - 1:
-                print(f"🔄 Switching to Account {i+2}...")
+                print(f"[RETRY] Switching to Account {i+2}...")
             else:
-                print(f"❌ CRITICAL ERROR: All {len(SMTP_ACCOUNTS)} accounts failed for {to_email}.")
+                print(f"[ERROR] CRITICAL ERROR: All {len(SMTP_ACCOUNTS)} accounts failed for {to_email}.")
                 
         except OSError as oe:
             # Handle Render firewall blocked ports
@@ -258,11 +258,11 @@ Bhubaneswar, Odisha
                     server.starttls()
                     server.login(account["email"], account["password"])
                     server.send_message(msg)
-                    print(f"✅ Sent QR to {to_email} using Account {i+1} on fallback port 2525")
+                    print(f"[SUCCESS] Sent QR to {to_email} using Account {i+1} on fallback port 2525")
                     return
             except Exception as e2:
-                print(f"⚠️ Account {i+1} failed on fallback port: {e2}")
+                print(f"[WARNING] Account {i+1} failed on fallback port: {e2}")
                 if i < len(SMTP_ACCOUNTS) - 1:
-                    print(f"🔄 Switching to Account {i+2}...")
+                    print(f"[RETRY] Switching to Account {i+2}...")
                 else:
-                    print(f"❌ CRITICAL ERROR: All {len(SMTP_ACCOUNTS)} accounts failed for {to_email}.")
+                    print(f"[ERROR] CRITICAL ERROR: All {len(SMTP_ACCOUNTS)} accounts failed for {to_email}.")

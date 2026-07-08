@@ -10,7 +10,7 @@ from auth_dependency import get_current_user, require_role
 from email_service import send_qr_email
 
 
-app = FastAPI(title="AIC Check-in System")
+app = FastAPI(title="INAE Check-in System")
 
 app.add_middleware(
     CORSMiddleware,
